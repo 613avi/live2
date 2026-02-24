@@ -1,0 +1,40 @@
+name: Update Campaign Mirror
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install puppeteer
+
+      - name: Install Chromium
+        run: npx puppeteer browsers install chrome
+
+      - name: Scrape page
+        run: node scrape.js
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name 'GitHub Actions Bot'
+          git config user.email 'actions@github.com'
+          git add content.html
+          git diff --staged --quiet || git commit -m "Update content $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push
