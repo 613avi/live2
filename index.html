@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מגבית פורים - סטטיסטיקות חי</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+    <iframe id="content" src="content.html"></iframe>
+    
+    <script>
+        // Auto-refresh every 60 seconds to catch updates
+        let lastContent = '';
+        
+        async function checkUpdate() {
+            try {
+                const res = await fetch('content.html?t=' + Date.now(), { cache: 'no-store' });
+                const text = await res.text();
+                
+                if (lastContent && text !== lastContent) {
+                    document.getElementById('content').src = 'content.html?t=' + Date.now();
+                }
+                lastContent = text;
+            } catch (e) {}
+        }
+        
+        setInterval(checkUpdate, 60000);
+    </script>
+</body>
+</html>
